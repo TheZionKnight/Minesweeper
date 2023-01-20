@@ -76,19 +76,26 @@ void command(char** realField, char** revealed, int size, int bombs) {
 	bool win = false, lose = false;
 	int revealedOrMarkedCorrectly = 0;
 	while (!win && !lose) {
+		retry:
 		int action = whichAction(); //open-1, mark-2, unmark-3
 		int i, j;
 		std::cin >> j >> i;
-		switch (action) {
-		case 1:
-			open(i, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
-			break;
-		case 2:
-			mark(i, j, realField, revealed, size, win, revealedOrMarkedCorrectly);
-			break;
-		case 3:
-			unmark(i, j, realField, revealed, size, revealedOrMarkedCorrectly);
-			break;
+		if (i >= 0 && i < size && j >= 0 && j < size) {
+			switch (action) {
+			case 1:
+				open(i, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+				break;
+			case 2:
+				mark(i, j, realField, revealed, size, win, revealedOrMarkedCorrectly);
+				break;
+			case 3:
+				unmark(i, j, realField, revealed, size, revealedOrMarkedCorrectly);
+				break;
+			}
+		}
+		else {
+			std::cout << "Out of bounds. Try again: ";
+			goto retry;
 		}
 	}
 	if (win) {
@@ -106,6 +113,14 @@ void open(int i, int j, char** realField, char** revealed, int size, bool& lose,
 }
 
 void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly) {
+	if (revealed[i][j] == 'X') {
+		std::cout << "Already marked! Enter another command: ";
+		return;
+	}
+	if (revealed[i][j] != '?') {
+		std::cout << "You cannot mark there! Enter another command: ";
+		return;
+	}
 	revealed[i][j] = 'X';
 	if (realField[i][j] == 'X') {
 		revealedOrMarkedCorrectly++;
@@ -117,7 +132,15 @@ void mark(int i, int j, char** realField, char** revealed, int size, bool& win, 
 }
 
 void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly) {
-	
+	if (revealed[i][j] != 'X') {
+		std::cout << "That place isn't marked! Enter another command: ";
+		return;
+	}
+	revealed[i][j] = '?';
+	if (realField[i][j] == 'X') {
+		revealedOrMarkedCorrectly--;
+	}
+	showField(revealed, size);
 }
 
 void fillField(char** field, int size, char symbol) {
