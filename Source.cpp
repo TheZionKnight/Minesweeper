@@ -1,23 +1,25 @@
 #include <iostream>
-#include <iomanip>
-#include <stdlib.h>
+#include <iomanip> //for setw
+#include <stdlib.h> //for system("cls")
+#include <cstdlib> //for rand()
+#include <time.h>
 
 void showField(char** field, int size);
 
-void fillBombs(char** field, int size);
+void fillBombs(char** field, int size, int bombs);
 
-void fillNumbers(char** field, int size);
+void addNumbers(char** field, int size, int bomb);
 
-void nullField(char** field, int size) {
+void command(char** realField, char** revealed, int size, int bombs);
+
+void addOne(int i, int j, char** field, int size);
+
+void fillField(char** field, int size, char symbol) {
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size; j++) {
-			field[i][j] = '?';
+			field[i][j] = symbol;
 		}
 	}
-}
-
-void startUp(int size, int bombs, bool** revealed, char** realField) {
-	
 }
 
 void Engine() {
@@ -35,16 +37,20 @@ void Engine() {
 	for (int i = 0; i < size; i++) {
 		revealed[i] = new char[size];
 	}
-
-	nullField(realField, size);
-	nullField(revealed, size);
-	showField(revealed, size);
+	fillField(realField, size, ' ');
+	fillField(revealed, size, '?');
+	fillBombs(realField, size, bombs);
+	command(realField, revealed, size, bombs);
 }
 
 int main() {
 
 	Engine();
 
+}
+
+void command(char** realField, char** revealed, int size, int bombs) {
+	showField(realField, size);
 }
 
 void showField(char** field, int size) {
@@ -65,12 +71,39 @@ void showField(char** field, int size) {
 		}
 		std::cout << std::endl;
 	}
+	std::cout << std::endl << "Enter open/mark/unmark and the coordinates(horizontally, vertically)" << std::endl;
 }
 
-void fillBombs(char** field, int size) {
-
+void fillBombs(char** field, int size, int bombs) {
+	srand(time(0));
+	int counter = 0;
+	while (counter < bombs) {
+		int i = rand() % size;
+		int j = rand() % size;
+		if (field[i][j] == ' ') {
+			field[i][j] = 'X';
+			addOne(i-1, j-1, field, size);
+			addOne(i-1, j, field, size);
+			addOne(i-1, j+1, field, size);
+			addOne(i, j-1, field, size);
+			addOne(i, j+1, field, size);
+			addOne(i+1, j-1, field, size);
+			addOne(i+1, j, field, size);
+			addOne(i+1, j+1, field, size);
+			counter++;
+		}
+	}
 }
 
-void fillNumbers(char** field, int size) {
-
+void addOne(int i, int j, char** field, int size) {
+	if (i >= 0 && i < size && j >= 0 && j < size) {
+		if (field[i][j] != 'X') {
+			if (field[i][j] == ' ') {
+				field[i][j] = '1';
+			}
+			else {
+				field[i][j]++;
+			}
+		}
+	}
 }
