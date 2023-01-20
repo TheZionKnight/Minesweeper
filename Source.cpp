@@ -4,11 +4,9 @@
 #include <cstdlib> //for rand()
 #include <time.h> //for rand()
 
-void showField(char** field, int size);
+void showField(char** field, int size, int bombs);
 
 void fillBombs(char** field, int size, int bombs);
-
-void addNumbers(char** field, int size, int bomb);
 
 void command(char** realField, char** revealed, int size, int bombs);
 
@@ -22,9 +20,9 @@ int whichAction();
 
 void open(int i, int j, char** realField, char** revealed, int size, bool& lose, bool& win, int& revealedOrMarkedCorrectly);
 
-void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly);
+void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly, int bombs);
 
-void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly);
+void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly, int bombs);
 
 bool inBounds(int i, int j, int size);
 
@@ -53,7 +51,7 @@ void Engine() {
 	fillField(realField, size, ' ');
 	fillField(revealed, size, '?');
 	fillBombs(realField, size, bombs);
-	showField(revealed, size);
+	showField(revealed, size, bombs);
 	command(realField, revealed, size, bombs);
 }
 
@@ -115,13 +113,13 @@ void command(char** realField, char** revealed, int size, int bombs) {
 					break;
 				}
 				open(i, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
-				showField(revealed, size);
+				showField(revealed, size, bombs);
 				break;
 			case 2:
-				mark(i, j, realField, revealed, size, win, revealedOrMarkedCorrectly);
+				mark(i, j, realField, revealed, size, win, revealedOrMarkedCorrectly, bombs);
 				break;
 			case 3:
-				unmark(i, j, realField, revealed, size, revealedOrMarkedCorrectly);
+				unmark(i, j, realField, revealed, size, revealedOrMarkedCorrectly, bombs);
 				break;
 			}
 		}
@@ -177,7 +175,7 @@ void open(int i, int j, char** realField, char** revealed, int size, bool& lose,
 	}
 }
 
-void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly) {
+void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly, int bombs) {
 	if (revealed[i][j] == 'X') {
 		std::cout << "Already marked! Enter another command: ";
 		return;
@@ -193,10 +191,10 @@ void mark(int i, int j, char** realField, char** revealed, int size, bool& win, 
 			win = true;
 		}
 	}
-	showField(revealed, size);
+	showField(revealed, size, bombs);
 }
 
-void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly) {
+void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly, int bombs) {
 	if (revealed[i][j] != 'X') {
 		std::cout << "That place isn't marked! Enter another command: ";
 		return;
@@ -205,7 +203,7 @@ void unmark(int i, int j, char** realField, char** revealed, int size, int& reve
 	if (realField[i][j] == 'X') {
 		revealedOrMarkedCorrectly--;
 	}
-	showField(revealed, size);
+	showField(revealed, size, bombs);
 }
 
 void fillField(char** field, int size, char symbol) {
@@ -216,8 +214,9 @@ void fillField(char** field, int size, char symbol) {
 	}
 }
 
-void showField(char** field, int size) {
+void showField(char** field, int size, int bombs) {
 	system("cls");
+	std::cout << "Number of bombs: " << bombs << std::endl << std::endl << std::endl;
 	std::cout << "    ";
 	for (int i = 0; i < size; i++) {
 		std::cout << std::setw(3) << i;
