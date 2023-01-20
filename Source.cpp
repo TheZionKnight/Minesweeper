@@ -28,6 +28,10 @@ void unmark(int i, int j, char** realField, char** revealed, int size, int& reve
 
 bool inBounds(int i, int j, int size);
 
+int validSize();
+
+int validBombs(int size);
+
 int main() {
 
 	Engine();
@@ -35,11 +39,8 @@ int main() {
 }
 
 void Engine() {
-	int size = 0, bombs = 0;
-	std::cout << "Enter size of field: ";
-	std::cin >> size;
-	std::cout << std::endl << "Enter number of bombs: ";
-	std::cin >> bombs;
+	int size = validSize();
+	int bombs = validBombs(size);
 	std::cout << std::endl;
 	char** realField = new char* [size];
 	for (int i = 0; i < size; i++) {
@@ -54,6 +55,30 @@ void Engine() {
 	fillBombs(realField, size, bombs);
 	showField(revealed, size);
 	command(realField, revealed, size, bombs);
+}
+
+int validSize() {
+	const int MIN_SIZE = 3, MAX_SIZE = 10;
+	int size = 0;
+	std::cout << "Enter size of field: ";
+	std::cin >> size;
+	if (size<MIN_SIZE || size>MAX_SIZE) {
+		std::cout << "Size must be between 3 and 10. ";
+		return validSize();
+	}
+	return size;
+}
+
+int validBombs(int size) {
+	const int MIN_BOMBS = 1, MAX_BOMBS = size*3;
+	int bombs = 0;
+	std::cout << "Enter number of bombs: ";
+	std::cin >> bombs;
+	if (bombs<MIN_BOMBS || bombs>MAX_BOMBS) {
+		std::cout << "Bombs can be from 1 to "<<size*3<<". ";
+		return validBombs(size);
+	}
+	return size;
 }
 
 int whichAction() {
