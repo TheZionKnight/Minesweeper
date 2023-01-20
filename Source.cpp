@@ -26,6 +26,8 @@ void mark(int i, int j, char** realField, char** revealed, int size, bool& win, 
 
 void unmark(int i, int j, char** realField, char** revealed, int size, int& revealedOrMarkedCorrectly);
 
+bool inBounds(int i, int j, int size);
+
 int main() {
 
 	Engine();
@@ -80,7 +82,7 @@ void command(char** realField, char** revealed, int size, int bombs) {
 		int action = whichAction(); //open-1, mark-2, unmark-3
 		int i, j;
 		std::cin >> j >> i;
-		if (i >= 0 && i < size && j >= 0 && j < size) {
+		if (inBounds(i, j, size)) {
 			switch (action) {
 			case 1:
 				open(i, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
@@ -99,17 +101,57 @@ void command(char** realField, char** revealed, int size, int bombs) {
 		}
 	}
 	if (win) {
-		std::cout << std::endl << "Congratulations! You won!";
+		std::cout << std::endl << "Congratulations! You won!"<<std::endl;
 		return;
 	}
 	if (lose) {
-		std::cout << std::endl << "Uh-oh! You stepped on a mine!";
+		std::cout << std::endl << "Uh-oh! You stepped on a mine!" << std::endl;
 		return;
 	}
 }
 
-void open(int i, int j, char** realField, char** revealed, int size, bool& lose, bool& win, int& revealedOrMarkedCorrectly) {
+bool inBounds(int i, int j, int size) {
+	if (i >= 0 && i < size && j >= 0 && j < size) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
+void open(int i, int j, char** realField, char** revealed, int size, bool& lose, bool& win, int& revealedOrMarkedCorrectly) {
+	if (!inBounds(i, j, size)) {
+		return;
+	}
+	if (revealed[i][j] == 'X') {
+		std::cout << "Cannot open marked spaces. Enter another command: ";
+		return;
+	}
+	if (revealed[i][j] == '?') {
+		revealed[i][j] = realField[i][j];
+		if (realField[i][j] == 'X') {
+			lose = true;
+			showField(revealed, size);
+			return;
+		}
+		revealedOrMarkedCorrectly++;
+		if (revealedOrMarkedCorrectly == size * size) {
+			win = true;
+			showField(revealed, size);
+			return;
+		}
+		if (revealed[i][j] == ' ') {
+			open(i - 1, j - 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i - 1, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i - 1, j + 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i, j - 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i, j + 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i + 1, j - 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i + 1, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+			open(i + 1, j + 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+		}
+	}
+	showField(revealed, size);
 }
 
 void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly) {
