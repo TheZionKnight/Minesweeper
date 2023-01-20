@@ -85,7 +85,12 @@ void command(char** realField, char** revealed, int size, int bombs) {
 		if (inBounds(i, j, size)) {
 			switch (action) {
 			case 1:
+				if (revealed[i][j] == 'X') {
+					std::cout << "Cannot open marked spaces. Enter another command: ";
+					break;
+				}
 				open(i, j, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
+				showField(revealed, size);
 				break;
 			case 2:
 				mark(i, j, realField, revealed, size, win, revealedOrMarkedCorrectly);
@@ -123,21 +128,15 @@ void open(int i, int j, char** realField, char** revealed, int size, bool& lose,
 	if (!inBounds(i, j, size)) {
 		return;
 	}
-	if (revealed[i][j] == 'X') {
-		std::cout << "Cannot open marked spaces. Enter another command: ";
-		return;
-	}
 	if (revealed[i][j] == '?') {
 		revealed[i][j] = realField[i][j];
 		if (realField[i][j] == 'X') {
 			lose = true;
-			showField(revealed, size);
 			return;
 		}
 		revealedOrMarkedCorrectly++;
 		if (revealedOrMarkedCorrectly == size * size) {
 			win = true;
-			showField(revealed, size);
 			return;
 		}
 		if (revealed[i][j] == ' ') {
@@ -151,7 +150,6 @@ void open(int i, int j, char** realField, char** revealed, int size, bool& lose,
 			open(i + 1, j + 1, realField, revealed, size, lose, win, revealedOrMarkedCorrectly);
 		}
 	}
-	showField(revealed, size);
 }
 
 void mark(int i, int j, char** realField, char** revealed, int size, bool& win, int& revealedOrMarkedCorrectly) {
