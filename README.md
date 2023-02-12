@@ -7,8 +7,6 @@ A field is generated using the size and number of bombs.
 
 The commands are: mark/unmark/open followed by x y coordinates.
 
-There is vaidation for all of the above.
-
 ->To win all cells must be rightfully marked or uncovered.
 
 ->The player loses if a bomb is uncovered.
