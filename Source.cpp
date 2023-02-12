@@ -1,7 +1,21 @@
+/**
+*
+* Solution to course project # 7
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2022/2023
+*
+* @author Mira Velikova
+* @idnumber 5MI0600269
+* @compiler VC
+*
+* <program code>
+*
+*/
+
 #include <iostream>
 #include <iomanip> //for setw
 #include <stdlib.h> //for system("cls")
-#include <cstdlib> //for rand()
 #include <time.h> //for rand()
 
 void showField(char** field, int size, int bombs);
@@ -53,6 +67,12 @@ void Engine() {
 	fillBombs(realField, size, bombs);
 	showField(revealed, size, bombs);
 	command(realField, revealed, size, bombs);
+	for (int i = 0; i < size; i++) {
+		delete [] realField[i];
+		delete [] revealed[i];
+	}
+	delete [] realField;
+	delete [] revealed;
 }
 
 int validSize() {
@@ -76,7 +96,7 @@ int validBombs(int size) {
 		std::cout << "Bombs can be from 1 to "<<size*3<<". ";
 		return validBombs(size);
 	}
-	return size;
+	return bombs;
 }
 
 int whichAction() {
@@ -216,7 +236,7 @@ void fillField(char** field, int size, char symbol) {
 
 void showField(char** field, int size, int bombs) {
 	system("cls");
-	std::cout << "Number of bombs: " << bombs << std::endl << std::endl << std::endl;
+	std::cout << "Number of bombs: " << bombs << std::endl << std::endl;
 	std::cout << "    ";
 	for (int i = 0; i < size; i++) {
 		std::cout << std::setw(3) << i;
@@ -242,7 +262,7 @@ void fillBombs(char** field, int size, int bombs) {
 	while (counter < bombs) {
 		int i = rand() % size;
 		int j = rand() % size;
-		if (field[i][j] == ' ') {
+		if (field[i][j] != 'X') {
 			field[i][j] = 'X';
 			addOne(i-1, j-1, field, size);
 			addOne(i-1, j, field, size);
@@ -258,7 +278,7 @@ void fillBombs(char** field, int size, int bombs) {
 }
 
 void addOne(int i, int j, char** field, int size) {
-	if (i >= 0 && i < size && j >= 0 && j < size) {
+	if (inBounds(i, j, size)) {
 		if (field[i][j] != 'X') {
 			if (field[i][j] == ' ') {
 				field[i][j] = '1';
